@@ -29,10 +29,12 @@ func (r *Request) Contexts() []string {
 	return ctxs
 }
 
+// Parameters parses intent parameters from dialogflow request.
 type Parameters struct {
 	values map[string]Value
 }
 
+// UnmarshalJSON is an implementation of json.UnmarshalJSON
 func (p *Parameters) UnmarshalJSON(data []byte) error {
 	var values map[string]interface{}
 	err := json.Unmarshal(data, &values)
@@ -46,6 +48,8 @@ func (p *Parameters) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+// Get parameter value from dialogflow request by key name.
+// The key matches the parameter name from dialogflow intent.
 func (p *Parameters) Get(key string) interface{} {
 	if val, ok := p.values[key]; ok {
 		return val.Get()
@@ -86,6 +90,7 @@ func (param *intParam) Get() interface{} {
 	return *param.value
 }
 
+// Value is the parameter interface.
 type Value interface {
 	Get() interface{}
 }

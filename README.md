@@ -7,7 +7,7 @@ Package action is a golang client for dialog flow requests and responses through
 # Usage
 
 ```golang
-dialogflow.HandleAction("foo", func(w http.ResponseWriter, r *http.Request, req *Request) {
+dialogflow.HandleAction("foo", func(w http.ResponseWriter, r *http.Request, req *dialogflow.Request) {
     param1 := req.QueryResult.Parameters.Get("param1")
     param2 := req.QueryResult.Parameters.Get("param2")
     text := fmt.Sprintf("param1: %v\nparam2: %v", param1, param2)
@@ -15,7 +15,7 @@ dialogflow.HandleAction("foo", func(w http.ResponseWriter, r *http.Request, req 
     if err != nil {
         log.Println(errors.WithStack(err))
     }
-    resp := Google(true, []string{"foo"}, google.Simple(show, text))
+    resp := dialogflow.Google(true, []string{"foo"}, google.Simple(show, text))
     json.NewEncoder(w).Encode(resp)
 })
 

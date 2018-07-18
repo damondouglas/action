@@ -1,0 +1,46 @@
+{
+  "responseId": "6cd7a2e6-5acd-4b99-b787-1d0dafc49bd3",
+  "queryResult": {
+    "queryText": "foo frog 3",
+    "action": "foo",
+    "parameters": {
+      "param1": 3,
+      "param2": "frog"
+    },
+    "allRequiredParamsPresent": true,
+    "fulfillmentMessages": [
+      {
+        "text": {
+          "text": [
+            ""
+          ]
+        }
+      }
+    ],
+    "outputContexts": [
+      {
+        "name": "projects/showcase-42972/agent/sessions/a998b1ae-2770-2f5c-770a-9cd642f51421/contexts/output_foo_context",
+        "lifespanCount": 5,
+        "parameters": {
+          "param1.original": "3",
+          "param1": 3,
+          "param2": "frog",
+          "param2.original": "frog"
+        }
+      }
+    ],
+    "intent": {
+      "name": "projects/showcase-42972/agent/intents/3f869237-b616-4e5b-b2a7-5591f104703b",
+      "displayName": "foo"
+    },
+    "intentDetectionConfidence": 0.6,
+    "diagnosticInfo": {
+      "webhook_latency_ms": 161
+    },
+    "languageCode": "en"
+  },
+  "webhookStatus": {
+    "code": 5,
+    "message": "Webhook call failed. Error: 404 Not Found"
+  }
+}

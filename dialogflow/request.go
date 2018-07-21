@@ -1,13 +1,12 @@
 package dialogflow
 
 import (
+	"bytes"
 	"encoding/json"
-	"fmt"
 	"io"
 	"io/ioutil"
 	"path"
 	"regexp"
-	"strconv"
 )
 
 // Request data from dialogflow fulfillment webhook.
@@ -18,7 +17,8 @@ type Request struct {
 		Parameters               *Parameters `json:"parameters"`
 		AllRequiredParamsPresent bool        `json:"allRequiredParamsPresent"`
 		OutputContexts           []struct {
-			Name string `json:"name"`
+			Name       string      `json:"name"`
+			Parameters *Parameters `json:"parameters"`
 		} `json:"outputContexts"`
 	} `json:"queryResult"`
 }
@@ -38,7 +38,7 @@ func sanitize(data []byte) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	transData := re.ReplaceAll(data, []byte("org"))
+	transData := re.ReplaceAll(data, []byte("original"))
 	return transData, nil
 }
 
@@ -69,14 +69,17 @@ type Parameters struct {
 // UnmarshalJSON is an implementation of json.UnmarshalJSON
 func (p *Parameters) UnmarshalJSON(data []byte) error {
 	var values map[string]interface{}
-	err := json.Unmarshal(data, &values)
-	if err != nil {
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.UseNumber()
+	if err := decoder.Decode(&values); err != nil {
 		return err
 	}
+
 	p.values = make(map[string]Value, len(values))
 	for k, v := range values {
 		p.values[k] = cast(v)
 	}
+
 	return nil
 }
 
@@ -90,20 +93,27 @@ func (p *Parameters) Get(key string) interface{} {
 }
 
 func cast(value interface{}) Value {
-	var val Value
+	var num json.Number
+	var ok bool
 
-	strValue := fmt.Sprint(value)
-	defaultParam := new(stringParam)
-	defaultParam.value = &strValue
-	val = defaultParam
-	intValue, err := strconv.Atoi(strValue)
-	if err == nil {
-		param := new(intParam)
-		param.value = &intValue
-		val = param
+	if num, ok = value.(json.Number); !ok {
+		strValue := value.(string)
+		param := new(stringParam)
+		param.value = &strValue
+		return param
 	}
 
-	return val
+	intValue, _ := num.Int64()
+	floatValue, _ := num.Float64()
+	if floatValue-float64(intValue) > 0 {
+		param := new(floatParam)
+		param.value = &floatValue
+		return param
+	}
+
+	param := new(intParam)
+	param.value = &intValue
+	return param
 }
 
 type stringParam struct {
@@ -115,10 +125,18 @@ func (param *stringParam) Get() interface{} {
 }
 
 type intParam struct {
-	value *int
+	value *int64
 }
 
 func (param *intParam) Get() interface{} {
+	return int(*param.value)
+}
+
+type floatParam struct {
+	value *float64
+}
+
+func (param *floatParam) Get() interface{} {
 	return *param.value
 }
 

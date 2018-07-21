@@ -34,8 +34,14 @@ func TestRequest(t *testing.T) {
 	a.Equals(req.QueryResult.AllRequiredParamsPresent, true)
 	ctxs := req.Contexts()
 	a.Equals(ctxs[0], "output_foo_context")
+
 	param1 := req.QueryResult.Parameters.Get("param1")
 	a.Equals(param1, 3)
 	param2 := req.QueryResult.Parameters.Get("param2")
 	a.Equals(param2, "frog")
+
+	originalParam1 := req.QueryResult.OutputContexts[0].Parameters.Get("param1original")
+	a.Equals(originalParam1, "3")
+	originalParam2 := req.QueryResult.OutputContexts[0].Parameters.Get("param2original")
+	a.Equals(originalParam2, "frog")
 }

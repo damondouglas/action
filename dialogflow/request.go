@@ -3,7 +3,10 @@ package dialogflow
 import (
 	"encoding/json"
 	"fmt"
+	"io"
+	"io/ioutil"
 	"path"
+	"regexp"
 	"strconv"
 )
 
@@ -27,6 +30,35 @@ func (r *Request) Contexts() []string {
 		ctxs[i] = path.Base(c.Name)
 	}
 	return ctxs
+}
+
+func sanitize(data []byte) ([]byte, error) {
+	// dialogflow sends json key as <paramname>.original and encoder ignores it.
+	re, err := regexp.Compile("\\.original")
+	if err != nil {
+		return nil, err
+	}
+	transData := re.ReplaceAll(data, []byte("org"))
+	return transData, nil
+}
+
+// Encode Request from Reader.
+func Encode(r io.Reader) (*Request, error) {
+	var req *Request
+	data, err := ioutil.ReadAll(r)
+	if err != nil {
+		return nil, err
+	}
+
+	transData, err := sanitize(data)
+	if err != nil {
+		return nil, err
+	}
+	err = json.Unmarshal(transData, &req)
+	if err != nil {
+		return nil, err
+	}
+	return req, nil
 }
 
 // Parameters parses intent parameters from dialogflow request.

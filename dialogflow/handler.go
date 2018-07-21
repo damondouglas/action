@@ -1,9 +1,10 @@
 package dialogflow
 
 import (
-	"encoding/json"
 	"log"
 	"net/http"
+
+	"github.com/pkg/errors"
 )
 
 // ActionHandler is the action handler method signature.
@@ -27,7 +28,12 @@ func HandleAction(name string, handler ActionHandler) {
 // Dispatch is the main handler provided to http.HandlerFunc("...", Dispatch)
 func Dispatch(w http.ResponseWriter, r *http.Request) {
 	var req *Request
-	json.NewDecoder(r.Body).Decode(&req)
+
+	req, err := Encode(r.Body)
+	if err != nil {
+		log.Println(errors.WithStack(err))
+	}
+
 	action := req.QueryResult.Action
 	if action == "" {
 		log.Println("action is blank")

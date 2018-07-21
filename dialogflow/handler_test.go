@@ -15,10 +15,21 @@ import (
 	"github.com/pkg/errors"
 )
 
+var (
+	mockAction = Action{
+		Name:    "foo",
+		Handler: mockActionHandler,
+		RequiredParams: []string{
+			"param1",
+			"param2",
+		},
+	}
+)
+
 func TestDispatch(t *testing.T) {
 	a := assert.New(t)
 
-	HandleAction("foo", mockActionHandler)
+	HandleAction(mockAction)
 	_, ok := handlers["foo"]
 	a.Equals(ok, true)
 
@@ -39,7 +50,7 @@ func mockActionHandler(w http.ResponseWriter, r *http.Request, req *Request) {
 }
 
 func Example() {
-	HandleAction("foo", func(w http.ResponseWriter, r *http.Request, req *Request) {
+	handler := func(w http.ResponseWriter, r *http.Request, req *Request) {
 		param1 := req.QueryResult.Parameters.Get("param1")
 		param2 := req.QueryResult.Parameters.Get("param2")
 		text := fmt.Sprintf("param1: %v\nparam2: %v", param1, param2)
@@ -50,7 +61,16 @@ func Example() {
 		resp := Google(true, []string{"foo"}, google.Simple(show, text))
 		json.NewEncoder(w).Encode(resp)
 
-	})
+	}
+	fooAction := Action{
+		Name:    "foo",
+		Handler: handler,
+		RequiredParams: []string{
+			"param1",
+			"param2",
+		},
+	}
+	HandleAction(fooAction)
 
 	http.HandleFunc("/action", Dispatch)
 }
@@ -59,7 +79,7 @@ func TestHandleAction(t *testing.T) {
 	var req *Request
 	a := assert.New(t)
 
-	HandleAction("foo", mockActionHandler)
+	HandleAction(mockAction)
 	_, ok := handlers["foo"]
 	a.Equals(ok, true)
 

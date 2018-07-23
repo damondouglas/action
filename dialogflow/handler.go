@@ -32,8 +32,10 @@ func Dispatch(w http.ResponseWriter, r *http.Request) {
 	var req *Request
 	var action Action
 	var ok bool
+	var err error
 
-	req, err := Encode(r.Body)
+	req, err = Encode(r.Body)
+	defer r.Body.Close()
 	if err != nil {
 		log.Println(errors.WithStack(err))
 	}

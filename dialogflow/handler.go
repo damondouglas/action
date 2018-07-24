@@ -1,6 +1,8 @@
 package dialogflow
 
 import (
+	"encoding/json"
+	"io/ioutil"
 	"log"
 	"net/http"
 
@@ -34,15 +36,22 @@ func Dispatch(w http.ResponseWriter, r *http.Request) {
 	var ok bool
 	var err error
 
-	req, err = Encode(r.Body)
-	defer r.Body.Close()
+	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		log.Println(errors.WithStack(err))
+		log.Panic(errors.WithStack(err))
 	}
-
-	name := req.QueryResult.Intent.DisplayName
+	data, err = sanitize(data)
+	if err != nil {
+		log.Panic(errors.WithStack(err))
+	}
+	err = json.Unmarshal(data, &req)
+	if err != nil {
+		log.Panic(errors.WithStack(err))
+	}
+	name := req.QueryResult.Action
 	if name == "" {
 		log.Println("action is blank")
+		log.Println(string(data))
 	}
 	if action, ok = handlers[name]; !ok {
 		log.Println("handler not found for action " + name)

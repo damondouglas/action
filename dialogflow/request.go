@@ -12,6 +12,7 @@ import (
 // Request data from dialogflow fulfillment webhook.
 type Request struct {
 	QueryResult struct {
+		Action                   string      `json:"action"`
 		QueryText                string      `json:"queryText"`
 		Parameters               *Parameters `json:"parameters"`
 		AllRequiredParamsPresent bool        `json:"allRequiredParamsPresent"`
@@ -19,9 +20,6 @@ type Request struct {
 			Name       string      `json:"name"`
 			Parameters *Parameters `json:"parameters"`
 		} `json:"outputContexts"`
-		Intent struct {
-			DisplayName string `json:"dispayName"`
-		} `json:"intent"`
 	} `json:"queryResult"`
 }
 

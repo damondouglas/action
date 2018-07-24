@@ -30,7 +30,6 @@ func TestRequest(t *testing.T) {
 	r := bytes.NewBuffer(data)
 	req, err = Encode(r)
 	a.HandleError(err)
-	a.Equals(req.QueryResult.Action, "foo")
 	a.Equals(req.QueryResult.AllRequiredParamsPresent, true)
 	ctxs := req.Contexts()
 	a.Equals(ctxs[0], "output_foo_context")

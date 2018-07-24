@@ -13,13 +13,15 @@ import (
 type Request struct {
 	QueryResult struct {
 		QueryText                string      `json:"queryText"`
-		Action                   string      `json:"action"`
 		Parameters               *Parameters `json:"parameters"`
 		AllRequiredParamsPresent bool        `json:"allRequiredParamsPresent"`
 		OutputContexts           []struct {
 			Name       string      `json:"name"`
 			Parameters *Parameters `json:"parameters"`
 		} `json:"outputContexts"`
+		Intent struct {
+			DisplayName string `json:"dispayName"`
+		} `json:"intent"`
 	} `json:"queryResult"`
 }
 

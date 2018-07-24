@@ -40,7 +40,7 @@ func Dispatch(w http.ResponseWriter, r *http.Request) {
 		log.Println(errors.WithStack(err))
 	}
 
-	name := req.QueryResult.Action
+	name := req.QueryResult.Intent.DisplayName
 	if name == "" {
 		log.Println("action is blank")
 	}

@@ -9,6 +9,7 @@ import (
 type Google struct {
 	ExpectUserResponse bool          `json:"expectUserResponse"`
 	RichResponse       *RichResponse `json:"richResponse"`
+	SystemIntent       string        `json:"systemIntent"`
 }
 
 // RichResponse can include audio, text, cards, suggestions and structured data Items.

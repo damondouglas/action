@@ -12,15 +12,22 @@ import (
 // Request data from dialogflow fulfillment webhook.
 type Request struct {
 	QueryResult struct {
-		Action                   string      `json:"action"`
-		QueryText                string      `json:"queryText"`
-		Parameters               *Parameters `json:"parameters"`
-		AllRequiredParamsPresent bool        `json:"allRequiredParamsPresent"`
+		Action                   string
+		QueryText                string
+		Parameters               *Parameters
+		AllRequiredParamsPresent bool
 		OutputContexts           []struct {
-			Name       string      `json:"name"`
-			Parameters *Parameters `json:"parameters"`
-		} `json:"outputContexts"`
-	} `json:"queryResult"`
+			Name       string
+			Parameters *Parameters
+		}
+	}
+	OriginalDetectIntentRequest struct {
+		Payload struct {
+			User struct {
+				IDToken string
+			}
+		}
+	}
 }
 
 // Contexts extracts context names from dialogflow request.
